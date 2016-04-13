@@ -5,7 +5,7 @@ import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
+public class ArrayList1<K extends Comparable<K>,V> implements OrderedST<K,V>{
 
 	private List<STEntry<K,V>> list = new ArrayList<>();
 	
@@ -17,7 +17,6 @@ public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
 		return null;
 	}
 	
-	@Override
 	public void put(K key, V value) {
 		STEntry<K,V> a = new STEntry<>(key,value);
 		int getRank = size();
@@ -33,7 +32,7 @@ public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
 					try{
 						for(Entry<K,V> e : list){
 							
-							if(compareTo(key, e.getKey())<0){
+							if(key.compareTo(e.getKey())<0){
 								System.out.println("Entrou");
 								getRank = rank(e.getKey());//log n
 								
@@ -52,38 +51,32 @@ public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
 		
 	 
 
-	@Override
 	public V get(K key) {
 		Entry<K,V> entry = getEntry(key);
 		try{
 			return entry.getValue();
 		}catch(NullPointerException e){
-			System.err.println("The key submitted does not exist!> err information> "+e.getMessage());
+			System.err.println("The key submitted does not exist!> Err ocourred > "+e.getMessage());
 		}
 		return null;
 	}
 
-	@Override
 	public void delete(K key) {
 		put(key, null);
 	}
 
-	@Override
 	public boolean contains(K key) {
 		return list.contains(key);
 	}
 
-	@Override
 	public boolean isEmpty() {
 		return list.isEmpty();
 	}
 
-	@Override
 	public int size() {
 		return list.size();
 	}
 
-	@Override
 	public Iterable<K> keys() {
 		List<K> keys = new ArrayList<>();
 		for (Entry<K, V> e : list) 
@@ -92,17 +85,14 @@ public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
 		return keys;
 	}
 
-	@Override
 	public K min() {
-		return select(list.size()-list.size());
+		return select(0);
 	}
 
-	@Override
 	public K max() {
 		return select(list.size()-1);
 	}
 
-	@Override
 	public K floor(K key) {
 		Entry<K,V> entry = getEntry(key);
 		if(entry == null){
@@ -112,7 +102,6 @@ public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
 		return key;
 	}
 
-	@Override
 	public K ceiling(K key) {
 		Entry<K,V> entry = getEntry(key);
 		if(entry == null){
@@ -125,8 +114,6 @@ public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
 		return select(rank(key)+1);
 	}
 
-	@Override
-	
 	public int rank(K key) {
 		
 		int lo = 0, hi = list.size(),keep;
@@ -137,8 +124,8 @@ public class ArrayList1<K,V> implements OrderedST<K, V>,Comparable<K>{
 		 mid = lo+(hi-lo)/2;
 		 
 		 
-			keep = compareTo(key, select(mid));
-			System.out.println("Opa:"+keep);
+			keep = key.compareTo(select(mid));
+			//System.out.println("Opa:"+keep);
 		
 		 	if(keep < 0)hi = mid - 1;
 			else if(keep > 0)lo = mid + 1; 
@@ -148,7 +135,6 @@ return lo;
 	}
 	
 	
-	@Override
 	public K select(int i) {
 		try{
 			for(Entry<K,V> e : list){
@@ -162,12 +148,10 @@ return lo;
 	
 		}
 
-	@Override
 	public void deleteMin() {
 		list.remove(0);
 	}
 
-	@Override
 	public void deleteMax() {
 		list.remove(list.size()-1);
 	}
@@ -180,7 +164,6 @@ return lo;
 	
 	
 	
-	@Override
 	public int size(K lo, K hi) {
 		Entry<K,V> entry = getEntry(lo);
 		Entry<K,V> entry2 = getEntry(hi);
@@ -195,7 +178,6 @@ return lo;
 		return c2-c1+1;
 	}
 
-	@Override
 	public Iterable<K> keys(K lo, K hi) {
 		List<K> sub = new ArrayList<>();
 
@@ -209,33 +191,6 @@ return lo;
 		return sub;
 	}
 
-
-	public int compareTo(K key,K keys2) {
-		try{
-			if(key instanceof String){
-				String key1,key2;
-				key1 = (String) key;
-				key2 = (String) keys2;
-				return key1.compareTo(key2);
-			}
-		}catch(NullPointerException e){
-		}
-		
-		if(key instanceof Integer){
-				
-				int key1,key2;
-				key1 = (Integer) key;
-				key2 = (Integer) keys2;
-				
-					if(key1<key2) return key1-key2;
-					else if(key1>key2) return key1-key2;
-					else return 0;
-				
-		}
-		
-		
-		return 0;
-	}
 
 	
 	public static void main(String[] args){
@@ -260,12 +215,6 @@ return lo;
 		System.out.println("Chaves existentes: "+a.keys());
 		System.out.println("Tamanho: "+a.size());
 		System.out.println("CE lo -> hi:"+a.keys("B", "T"));
-	}
-
-	@Override
-	public int compareTo(K o) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 
 
