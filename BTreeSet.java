@@ -1,3 +1,4 @@
+
 package br.ufc.crateus.eda.st.btree;
 
 public class BTreeSet<K extends Comparable<K>,V> {
@@ -47,7 +48,7 @@ public class BTreeSet<K extends Comparable<K>,V> {
 		pg.add("B", "");
 		pg.add("R", "");
 		pg.add("F", "");
-		pg.add("C", "");
+		pg.add("L", "");
 		
 
 	}
