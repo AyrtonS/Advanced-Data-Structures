@@ -6,26 +6,25 @@ import java.util.List;
 
 import br.ufc.crateus.eda.st.ordered.BinarySearchST;
 
-public class Page<K extends Comparable<K>,V>{
-	public final int M = 6;
-	Page<K, V> root1;
+public class Page<K extends Comparable<K>,V> {
+	public static final int M = 6;
+	private boolean botton;
 	Node root;
+	List<Node> list = new ArrayList<>();
 	
-	public class Node{
-		Page<K,V> right;
-		Page<K,V> left;
-		Page<K,V> next = root1;
+	public class Node{	
+		K key;
+		V value;
+		Page<K,V> next;
 		BinarySearchST<K, V> bst = new BinarySearchST<>();
-			public Node(Page<K, V>.Node page,K key, V value){
-				root = page;
-				bst.put(key, value);
+			public Node(Node r,K key, V value){
+				root = r;
+				this.key = key;
+				this.value = value;
+				bst.put(key,value);
 			}
-		
 	}
 	
-	
-	
-	private boolean botton;
 	
 	Page(boolean booton) {
 		this.botton = booton;
@@ -35,25 +34,26 @@ public class Page<K extends Comparable<K>,V>{
 		
 	}
 	
-	public void insert(K key,V value)  {
-		root = insert(root, key, value); 
+	public void insert(K key, V value)  {
+		root = insert(root, key, value);
 		System.out.println(root.bst.keys());
 	}
-	private Node insert(Node page,K key,V value){
-		if(page == null) return new Node(page, key, value);
-		root.bst.put(key, value);
+	@SuppressWarnings("unchecked")
+	private Node insert(Node r, K key, V value){
+		if(r == null) return new Node(r, key, value);
 		
-		return root;
+		r.key = key;
+		r.value = value;
+		r.bst.put(key, value);
+		list.add(r);
+		
+		return r;
+		
 	}
-	
 	public void enter(Page<K,V> page) {
-		try{
-		System.out.println(page.root.bst);
-		}catch(Exception e){
-			System.out.println(e.getMessage());
-		}
-		//	root = new Node(page, min , page.root.bst.get(min));
-		
+		Page<K,V> newPage = new Page<>(false);
+		newPage.insert(page.root.key, page.root.value);
+		System.out.println("entered");
 	}
 	
 	public boolean isExternal() {
@@ -61,52 +61,42 @@ public class Page<K extends Comparable<K>,V>{
 	}
 	
 	public boolean holds(K key) {
-		
 		return false;
 	}
 	
-	
 	public Page<K,V> next(K key) {
-		Page<K, V> page = root1;
-		page = next(page,key);
-		return page;
+		return next(root.next,key);
 	}
-	private Page<K,V> next(Page<K,V> r,K key){
-		if(r == null) return null;
-		int cmd = key.compareTo(r.root.bst.min());
-		if(cmd < 0) return next(r.root.left,key);
-		else if(cmd > 0) return next(r.root.right, key);
-		else return r;
+	private Page<K,V> next(Page<K,V> next, K key){
+		if(next == null) return null;
+		int cmp = key.compareTo(next.root.key);
+		if(cmp == 0) return next;
+		if(cmp<0) return next(next.root.next,key);
+		
+		return next;
 	}
 	
 	public boolean hasOverflowed() {
-		if(root.bst.size() == M) return true;
+		if(list.size() == M) return true;
 		return false;
 	}
 	
-
 	public Page<K,V> split() {
-		Page<K,V> rootPage = new Page<>(true);
-		int mid = root.bst.size() / 2;
-		int size = root.bst.size();
-		System.out.println(mid+"|"+size);
-		System.out.println("uxa");
-		K key = root.bst.select(mid+1);
-		System.out.println(key);
-		V value =  root.bst.get(key);
+		Page<K,V> right = new Page<>(true);
+		int mid = list.size() / 2;
 		
-	rootPage.root = insert(rootPage.root, key, value);
+		while(mid<=list.size()){
+			System.out.println(root.bst.select(mid));
+			K key = root.bst.select(mid);
+			V value = root.bst.get(root.bst.select(mid));
+			right.insert(key, value);
+			mid++;
+		}
 		
-			
-	insert(root, key, null);
-		//System.out.println(rootPage.root.bst.keys());
-	
-		return rootPage;
+		return right;
 	}
 	
 	Iterable<K> keys() {
 		return null;
 	}
-
-	
 }
