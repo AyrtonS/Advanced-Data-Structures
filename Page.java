@@ -1,25 +1,19 @@
 package br.ufc.crateus.eda.st.btree;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.stream.Stream;
-
-import com.sun.xml.internal.txw2.Document;
-
 import br.ufc.crateus.eda.st.ordered.BinarySearchST;
-import br.ufc.crateus.eda.st.btree.BTreeSet;
+import br.ufc.crateus.eda.st.btree.BTree;
+
 
 public class Page<K extends Comparable<K>,V>{
 	public static final int M = 6;
 	private Page<K,V> raiz;
-	
 	Page<K,V> left;
 	Page<K,V> right;
 	private boolean botton;
 	Node root;
 	List<Node> list = new ArrayList<>();
-	
 	public class Node{	
 		K key;
 		V value;
@@ -49,7 +43,7 @@ public class Page<K extends Comparable<K>,V>{
 		root = insert(root, key, value);
 		if(raiz != null){
 			raiz = new Page<>(true);
-			System.out.println("Internal Page");
+			System.out.println("Internal Page:::");
 		}
 		System.out.println("*-*:"+root.bst.keys());
 	}
@@ -67,23 +61,24 @@ public class Page<K extends Comparable<K>,V>{
 		return r;
 		
 	}
-	public void enter(Page<K,V> page) {
-		raiz = new Page<K,V>(false);
-		raiz.insert(page.root.key, page.root.value);
+	public Page<K,V> enter(Page<K,V> r, Page<K,V> page){
+		r.insert(page.root.key, page.root.value);
+		//r.insert(page.root.key, page.root.value);
 		System.out.println("entered");
+		return r;
 	}
 	
 	public boolean isExternal() {
 		return botton;
 	}
 	
-	public boolean holds(K key) {
+	public boolean holds(Page<K,V> roo,K key) {
 		//int i = 0;
 		int cmp;
-		while(raiz.isExternal()){
-			cmp = key.compareTo(raiz.root.bst.floor(key));
-			if(cmp < 0) raiz = raiz.left;
-			else if(cmp > 0) raiz = raiz.right;
+		while(!roo.isExternal()){
+			cmp = key.compareTo(roo.root.bst.floor(key));
+			if(cmp < 0) roo = roo.left;
+			else if(cmp > 0) roo = roo.right;
 			else return true;
 		}
 		
@@ -97,16 +92,21 @@ public class Page<K extends Comparable<K>,V>{
 		
 	}
 	@SuppressWarnings("unused")
-	private Page<K,V> next(Page<K,V> next, K key){
+	public Page<K,V> next(Page<K,V> next, K key){
 		if(next == null) return null;
-		for(int i = 0;i < next.root.bst.size();i = i+1){
-			
-			int cmp = key.compareTo(next.root.bst.select(i));
-			if(cmp == 0) return next;
-			else if(cmp > 0) return next.right;
-			else return next.left;
+		if(!next.isExternal()){
+			System.out.println("{"+next.root.key+"}"+"|"+"{"+key+"}");
+			  int cmp = key.compareTo(next.root.key);
+				if(cmp < 0){
+					System.out.println("É MENOR");
+					next = next(next.left,key);
+				}
+				else if(cmp > 0){
+					System.out.println("É MAIOR");
+					next = next(next.right,key);
+				}
+				else return next;
 		}
-		
 		return next;
 		
 	}
@@ -124,23 +124,30 @@ public class Page<K extends Comparable<K>,V>{
 			System.out.println(root.bst.select(mid));
 			K key = root.bst.select(mid);
 			V value = root.bst.get(root.bst.select(mid));
+			System.out.println("IUPA"+key);
 			right.insert(key, value);
 			root.bst.delete(key);
 			mid++;
 		}
 		
-		root.next = right;//System.out.println("olha so: "+root.next.root.key);
+		//root.next = right;//System.out.println("olha so: "+root.next.root.key);
 		System.out.println("dividiu");
-		raiz = new Page<>(true);
-		raiz.right = right;
+		raiz = new Page<>(false);
+		//raiz.right = right;
 		//raiz.right = right;
 	
 		//System.out.println("--->"+raiz.right.root.bst.min());
 		return right;
 	}
 	
-	public Iterable<K> keys() {
-		return root.bst.keys();
+	public Iterable<K> keys(Page<K,V> roo) {
+		List<K> list = new ArrayList<>();
+		for(int i = 0; i < roo.root.bst.size();i++){
+			list.add(roo.root.bst.select(i));
+		}
+		/*keys(roo.left);
+		keys(roo.right);*/
+		return list;
 	}
 	
 	
