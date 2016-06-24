@@ -1,11 +1,15 @@
-package ST;
+package br.ufc.crateus.eda.st.ordered;
 
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map.Entry;
 
-public class ArrayList1<K extends Comparable<K>,V> implements OrderedST<K,V>{
+import org.w3c.dom.stylesheets.LinkStyle;
+
+import br.ufc.crateus.eda.st.STEntry;
+
+public class BinarySearchST<K extends Comparable<K>, V> implements OrderedST<K, V> {
 
 	private List<STEntry<K,V>> list = new ArrayList<>();
 	
@@ -23,6 +27,7 @@ public class ArrayList1<K extends Comparable<K>,V> implements OrderedST<K,V>{
 		if(value == null){
 			 getRank = rank(key); //log n
 			 System.out.println(getRank);
+			 System.out.println("deletado");
 			list.remove(getRank); // ~1
 			}
 		else{
@@ -62,7 +67,8 @@ public class ArrayList1<K extends Comparable<K>,V> implements OrderedST<K,V>{
 	}
 
 	public void delete(K key) {
-		put(key, null);
+		//put(key, null);
+		list.remove(key);
 	}
 
 	public boolean contains(K key) {
@@ -97,7 +103,7 @@ public class ArrayList1<K extends Comparable<K>,V> implements OrderedST<K,V>{
 		Entry<K,V> entry = getEntry(key);
 		if(entry == null){
 			int getRank = rank(key);
-			return select(getRank-1);
+			return select(getRank);
 		}		
 		return key;
 	}
@@ -123,8 +129,9 @@ public class ArrayList1<K extends Comparable<K>,V> implements OrderedST<K,V>{
 	while(lo <= hi){
 		 mid = lo+(hi-lo)/2;
 		 
-		 
-			keep = key.compareTo(select(mid));
+		 	//System.out.println("olha o meioo"+ select(mid));
+		 	if(select(mid)==null) return mid-1;
+		 	else keep = key.compareTo(select(mid));
 			//System.out.println("Opa:"+keep);
 		
 		 	if(keep < 0)hi = mid - 1;
@@ -190,36 +197,18 @@ return lo;
 		
 		return sub;
 	}
-
-
-	
-	public static void main(String[] args){
-		ArrayList1<String,Integer> a = new ArrayList1<String,Integer>();
-		@SuppressWarnings("unused")
-		ArrayList1<Integer,Integer> b = new ArrayList1<Integer,Integer>();
-		a.put("Clo", 20);
-		a.put("Blo", 10);
-		a.put("Qee", 5);
-		a.put("Alo", 5);
-		a.put("Zee", 5);
-		a.put("Blow", 8);
-	
-		/*b.put(100, 10);
-		b.put(23, 5);
-		b.put(200, 5);
-		b.put(5, 5);
-		b.put(1, 8);
-		b.put(25, 8);*/
-		System.out.println("----------------");
-		a.listar();
-		System.out.println("Chaves existentes: "+a.keys());
-		System.out.println("Tamanho: "+a.size());
-		System.out.println("CE lo -> hi:"+a.keys("B", "T"));
+	public void removeComplete(K key){
+		list.remove(key);
+		System.out.println("Sucessfully erased");
+	}
+	public static void main(String[] args) {
+		/*BinarySearchST<String, String> bst = new BinarySearchST<>();
+		bst.put("H", "");
+		bst.put("J", "");
+		bst.listar();
+		bst.delete("H");
+		bst.listar();*/
 	}
 
 
-	
-	
-
-	
 }
